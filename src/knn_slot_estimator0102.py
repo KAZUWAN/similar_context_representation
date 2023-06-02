@@ -59,17 +59,17 @@ class KNNManager():
             max_accuracy = max(self.accuracy_list)
             index        = self.accuracy_list.index(max_accuracy)
             best_k_range = k_range[index]
-            print("「k="+str(best_k_range)+"」の時、正解率は最大値「"+str(max_accuracy)+"」をとる", file= logf)
+            print("k="+str(best_k_range)+": accuracy max; "+str(max_accuracy), file= logf)
 
             max_precision = max(self.precision_list)
             index        = self.precision_list.index(max_precision)
             best_k_range = k_range[index]
-            print("「k="+str(best_k_range)+"」の時、適合率は最大値「"+str(max_precision)+"」をとる", file= logf)
+            print("k="+str(best_k_range)+": precision max; "+str(max_precision), file= logf)
 
             max_recall = max(self.recall_list)
             index        = self.recall_list.index(max_recall)
             best_k_range = k_range[index]
-            print("「k="+str(best_k_range)+"」の時、再現率は最大値「"+str(max_recall)+"」をとる", file= logf)
+            print("k="+str(best_k_range)+": recall max; "+str(max_recall), file= logf)
 
         # def data_arrangement(self, train_emb_list, train_slot_list, test_emb_list, test_slot_list):
         #     self.x_train = []
@@ -166,5 +166,5 @@ class KNNManager():
                 print(f"\ncount y train :{count_y_train}", file= logf)
                 print(f"count y test :{count_y_test}", file= logf)
 
-                print(f"訓練データの単語数：{len(self.y_train)}", file= logf)
-                print(f"テストデータの単語数：{len(self.y_test)}", file= logf)
+                print(f"train data words num:{len(self.y_train)}", file= logf)
+                print(f"test data words num{len(self.y_test)}", file= logf)
