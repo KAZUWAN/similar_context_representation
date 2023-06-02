@@ -1,10 +1,12 @@
 #   READ ME
 
 at first, you make directory "./log" and "./src/trained_model"
+***Sorry... can't use value_detector (~main005)**
+
 ## Run model
 | file name | ability | present support ver. |
 | --------------------- | ----------------------------- | ------------------------- |  
-| main001.py ~ 005.py | value detect & evaluate IOB accuracy, recall and etc... | main005.py |  
+| main001.py ~ 005.py | value detect & evaluate IOB accuracy, recall and etc... | ***None** |  
 | main0101.py ~ main0202.py | get semantic sentence embedding with contrastive learning & evaluate similarity of sentence & estimate word "slot"| main0202.py |
 
 ## Learning model
