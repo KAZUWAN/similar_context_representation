@@ -150,7 +150,7 @@ def load_slots():
 
 if __name__ == "__main__":
     torch.manual_seed(0)
-    model = train()
+    # model = train()
     # torch.save(model.state_dict(),'src/trained_model/value_detector.pth')
     trained_model = ValueDetector()
     trained_model.load_state_dict(torch.load('src/trained_model/value_detector.pth'))
