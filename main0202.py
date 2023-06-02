@@ -204,7 +204,7 @@ def eval(generate_semantic_setntence_embedding_model):
     # temp_test_slot の中身を確認する必要がある
     if frag == 1:
         with open(path_log, mode = "a") as logf:
-            print("[UNK]のみ評価する",file= logf)
+            print("evaluate only [UNK]",file= logf)
         temp_test_sentences, temp_test_slot, UNK_store = extract_UNK_notinclude.extract_UNK(original_model, test_sentences["sentence_list"], creater_test.ori_slot_list)
         with open(path_log, mode = "a") as logf:
             print("UNK List",file= logf)
@@ -212,7 +212,7 @@ def eval(generate_semantic_setntence_embedding_model):
 
     else:
         with open(path_log, mode = "a") as logf:
-            print("[UNK]を抽出しない",file= logf)
+            print("don't extract [UNK]",file= logf)
         temp_test_sentences = test_sentences["sentence_list"]
         temp_test_slot = creater_test.ori_slot_list
     # print("temp_test_slot")
@@ -232,24 +232,24 @@ def eval(generate_semantic_setntence_embedding_model):
 if __name__ == "__main__":
     path_log = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)),logprint_path))
     now = datetime.datetime.now()
-    with open(os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)),logprint_path)), mode = "a") as logf:
+    print(os.path.abspath(logprint_path))
+    with open(os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)),os.path.abspath(logprint_path))), mode = "a") as logf:
         print(f"\n{datetime.datetime.now()}", file= logf)
-        print("試しに日本語", file= logf)
         print(f"BATCH_SIZE: {BATCH_SIZE}", file= logf)
         print(f"N_EPOCH: {N_EPOCH}", file= logf)
         print(f"D_BERT: {D_BERT}", file= logf)
         print(f"Learning Rate: {Learning_Rate}", file= logf)
         print(f"DATASETS: {DATASETS}", file= logf)
 
-    # time_start = time.perf_counter()
-    # torch.manual_seed(0)
+    time_start = time.perf_counter()
+    torch.manual_seed(0)
     # ## trained_model = train()
     # ## torch.save(trained_model.state_dict(),f'src/trained_model/{DATASETS}_generate_semantic_sentence_embedding_model0201.pth')
-    # trained_model = MakeSematicSentenceEmbedding()
-    # trained_model.load_state_dict(torch.load(f'src/trained_model/{DATASETS}_generate_semantic_sentence_embedding_model0201.pth'))
-    # with open(path_log, mode = "a") as logf:
-    #     print(f"\n###  evaluation  ###", file= logf)
-    # eval(trained_model)
-    # time_end = time.perf_counter()
-    # with open(path_log, mode = "a") as logf:
-    #     print(f"##  process time(minutes): {(time_end-time_start)/60.0}", file= logf)
+    trained_model = MakeSematicSentenceEmbedding()
+    trained_model.load_state_dict(torch.load(f'src/trained_model/{DATASETS}_generate_semantic_sentence_embedding_model0201.pth'))
+    with open(path_log, mode = "a") as logf:
+        print(f"\n###  evaluation  ###", file= logf)
+    eval(trained_model)
+    time_end = time.perf_counter()
+    with open(path_log, mode = "a") as logf:
+        print(f"##  process time(minutes): {(time_end-time_start)/60.0}", file= logf)
