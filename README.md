@@ -1,5 +1,6 @@
 #   READ ME
 
+at first, you make directory "./log" and "./src/trained_model"
 ## Run model
 | file name | ability | present support ver. |
 | --------------------- | ----------------------------- | ------------------------- |  
