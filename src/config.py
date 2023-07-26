@@ -15,8 +15,7 @@ D_word2 = 512
 DATASETS = "sim-R"
 DATA_TRAIN_PATH = f"./Data/simulated-dialogue-master/{DATASETS}/train.json"
 DATA_TEST_PATH = f"./Data/simulated-dialogue-master/{DATASETS}/test.json"
-now_str = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-logprint_path = os.path.abspath(f"./log/log_print_{now_str}.csv")
+logprint_path = os.path.abspath("./log/log_print.csv")
 print(logprint_path)
 
 # now = datetime.datetime.now()
