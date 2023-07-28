@@ -199,10 +199,10 @@ def eval(generate_semantic_setntence_embedding_model):
     #     trained_emb_test_dataset.append(F.normalize(trained_model(temp_tokens_and_mask["specialtokens_added"], temp_tokens_and_mask["attention_mask_list"])))
     
 
-    frag = 1 #[UNK]について評価をする？ 1(Yes), 0(No)
     
     # temp_test_slot の中身を確認する必要がある
-    if frag == 1:
+    if ONLY_UNK_FRAG == 1:
+        only_str = 'Only [UNK]'
         with open(path_log, mode = "a") as logf:
             print("evaluate only [UNK]",file= logf)
         temp_test_sentences, temp_test_slot, UNK_store = extract_UNK_notinclude.extract_UNK(original_model, test_sentences["sentence_list"], creater_test.ori_slot_list)
@@ -211,6 +211,7 @@ def eval(generate_semantic_setntence_embedding_model):
             print(f"{UNK_store}\n",file= logf)
 
     else:
+        only_str = 'Not Only [UNK]'
         with open(path_log, mode = "a") as logf:
             print("don't extract [UNK]",file= logf)
         temp_test_sentences = test_sentences["sentence_list"]
@@ -220,12 +221,12 @@ def eval(generate_semantic_setntence_embedding_model):
     with open(path_log, mode = "a") as logf:
         print("\n\n########    EVALUATION TRAINED MODEL    ########\n\n", file= logf)
     model_knn.data_arrangement(model=trained_model, train_sentences=train_sentences["sentence_list"], test_sentences=temp_test_sentences, train_slot_list =creater_train.ori_slot_list, test_slot_list=temp_test_slot)
-    model_knn.run_knn("trained model", k_range_start=1, k_range_end=20, k_range_step=1)
+    model_knn.run_knn(f"trained model {only_str}", k_range_start=1, k_range_end=20, k_range_step=1)
     with open(path_log, mode = "a") as logf:
         print("\n\n########    EVALUATION ORIGINAL MODEL    ########\n\n", file= logf)
     model_knn = KNNManager()
     model_knn.data_arrangement(model=original_model, train_sentences=train_sentences["sentence_list"], test_sentences=temp_test_sentences, train_slot_list =creater_train.ori_slot_list, test_slot_list=temp_test_slot)
-    model_knn.run_knn("original model", k_range_start=1, k_range_end=20, k_range_step=1)
+    model_knn.run_knn(f"original model {only_str}", k_range_start=1, k_range_end=20, k_range_step=1)
 
     #  ファインチューニング前のオリジナルも比較すべき
 
