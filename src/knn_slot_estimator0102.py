@@ -32,8 +32,8 @@ class KNNManager():
             print("# prediction\nt\nr\nu\ne", file= logf)
             print(confusion, file= logf)
         self.accuracy_list.append(accuracy_score(self.y_test, y_pred))
-        self.precision_list.append(precision_score(self.y_test, y_pred, average="macro"))
-        self.recall_list.append(recall_score(self.y_test, y_pred, average="macro"))
+        self.precision_list.append(precision_score(self.y_test, y_pred, average=AVG))
+        self.recall_list.append(recall_score(self.y_test, y_pred, average=AVG))
 
     def run_knn(self, title, k_range_start=1, k_range_end=100, k_range_step=1):
         self.x_train = np.array([i.detach().numpy()  for i in self.x_train])
@@ -43,9 +43,9 @@ class KNNManager():
             self.KNN(n_neighbors = k)
         plt.clf()
         plt.title(title, fontsize=16)
-        plt.plot(k_range, self.accuracy_list, label="accuracy")
-        plt.plot(k_range, self.precision_list, label="precision")
-        plt.plot(k_range, self.recall_list, label="recall")
+        plt.plot(k_range, self.accuracy_list, label="accuracy", linestyle= 'solid')
+        plt.plot(k_range, self.precision_list, label=f"precision {AVG}", linestyle= 'dashed')
+        plt.plot(k_range, self.recall_list, label=f"recall {AVG}", linestyle= 'dotted')
         plt.xlabel("k", fontsize=16)
         plt.xticks(k_range, fontsize=14)
         plt.yticks(fontsize=14)
@@ -64,12 +64,12 @@ class KNNManager():
             max_precision = max(self.precision_list)
             index        = self.precision_list.index(max_precision)
             best_k_range = k_range[index]
-            print("k="+str(best_k_range)+": precision max; "+str(max_precision), file= logf)
+            print("k="+str(best_k_range)+f": precision{AVG} max; "+str(max_precision), file= logf)
 
             max_recall = max(self.recall_list)
             index        = self.recall_list.index(max_recall)
             best_k_range = k_range[index]
-            print("k="+str(best_k_range)+": recall max; "+str(max_recall), file= logf)
+            print("k="+str(best_k_range)+f": recall{AVG} max; "+str(max_recall), file= logf)
 
         # def data_arrangement(self, train_emb_list, train_slot_list, test_emb_list, test_slot_list):
         #     self.x_train = []
