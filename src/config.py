@@ -12,11 +12,14 @@ pretrained_name='bert-base-uncased'
 D_Glove = 300
 D_word2 = 512
 
+ONLY_UNK_FRAG = 1 #[UNK]について評価をする？ 1(Yes), 0(No)
+AVG = 'macro' #macro, micro, weighted
+
 DATASETS = "sim-R"
 DATA_TRAIN_PATH = f"./Data/simulated-dialogue-master/{DATASETS}/train.json"
 DATA_TEST_PATH = f"./Data/simulated-dialogue-master/{DATASETS}/test.json"
 logprint_path = os.path.abspath("./log/log_print.csv")
-print(logprint_path)
+# print(logprint_path)
 
 # now = datetime.datetime.now()
 # with open(os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)),logprint_path)), mode = "a", encoding= "shift_jis") as logf:
