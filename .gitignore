@@ -8,3 +8,5 @@ __pycache__/
 trained_model/
 
 log/
+
+visualize_attention/figures/
