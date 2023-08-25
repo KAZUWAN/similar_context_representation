@@ -22,7 +22,7 @@ def add_specialtokens(input_sentence_list, max_length, plus_token=True, padding=
         # print(sentence_list[i])
         # print(attention_mask_list[i])
         # print("sentence length:",len(sentence_list[i]))
-        if plus_token == True & (len(sentence_list[i]) != max_length+2):
+        if plus_token == True & (len(sentence_list[i]) != max_length+2) & (padding):
             raise ValueError("padding miss")
 
     return {"specialtokens_added":sentence_list, "attention_mask_list":attention_mask_list}
