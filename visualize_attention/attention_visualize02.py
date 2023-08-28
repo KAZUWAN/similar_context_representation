@@ -7,7 +7,7 @@ import os
 import datetime
 
 
-def show_attention_heatmap(attention_w_tensor, text, layer_n, tokenizer, save= True, show= False):
+def show_attention_heatmap(attention_w_tensor, tokens, layer_n, save= True, show= False):
     fig, ax = plt.subplots(3, 4, figsize= (40,30))
     fig.subplots_adjust(wspace= 0.27, hspace= 0.05)
 
@@ -19,8 +19,8 @@ def show_attention_heatmap(attention_w_tensor, text, layer_n, tokenizer, save= T
         sns.heatmap(attention_w.detach().numpy().copy(), ax = ax[i//4, i%4], cmap= 'OrRd', annot= True, vmin=0.0, vmax= 1.0, fmt='.2f', square=True, annot_kws={'fontsize':19})
         ax[i//4, i%4].set_title(f'head{i}', fontsize= 30)
 
-        ax[i//4, i%4].set_xticks(np.asarray(list(range(len(attention_w))))+0.5, tokenizer.convert_ids_to_tokens(tokenizer.encode(text)), rotation= 45, fontsize= 19)
-        ax[i//4, i%4].set_yticks(np.asarray(list(range(len(attention_w))))+0.5, tokenizer.convert_ids_to_tokens(tokenizer.encode(text)), rotation= 0, fontsize= 22)
+        ax[i//4, i%4].set_xticks(np.asarray(list(range(len(attention_w))))+0.5, tokens, rotation= 45, fontsize= 19)
+        ax[i//4, i%4].set_yticks(np.asarray(list(range(len(attention_w))))+0.5, tokens, rotation= 0, fontsize= 22)
 
         '''color bar のフォントサイズ変更'''
         cbar = ax[i//4, i%4].collections[0].colorbar
@@ -66,12 +66,12 @@ if __name__ == '__main__':
 
 
     print(f'\noutput size :{len(something)}')
-    print(f'1.{keys[0]};   {something[0].shape}')
-    print(f'2.{keys[1]};   {something[1].shape}')
-    print(f'3.{keys[2]};   {len(something[2])}')
-    print(f'4.{keys[3]};   {len(something[3])}')
-    print(f'something[2][0].shape :{something[2][0].shape}')
-    print(f'something[3][0].shape :{something[3][0].shape}')
+    print(f'1.{keys[0]};   {something[keys[0]].shape}')
+    print(f'2.{keys[1]};   {something[keys[1]].shape}')
+    print(f'3.{keys[2]};   {len(something[keys[2]])}')
+    print(f'4.{keys[3]};   {len(something[keys[3]])}')
+    print(f'something[{keys[2]}][0].shape :{something[keys[2]][0].shape}')
+    print(f'something[{keys[3]}][0].shape :{something[keys[3]][0].shape}')
 
 
     # "hidden states[0]は最初のembedding 出力"
@@ -93,18 +93,20 @@ if __name__ == '__main__':
 
     print(f'{text}')
 
+    tokens = tokenizer.convert_ids_to_tokens(tokenizer.encode(text))
+
     temp_list = []
     for i, attention_layer in enumerate(attentions):
         layer_n = i
         attention_tensor = attention_layer[0] # 0 is batch number
-        # show_attention_heatmap(attention_tensor, text, layer_n, tokenizer, save= True, show= False) #batch number 0
+        show_attention_heatmap(attention_tensor, tokens, layer_n, save= True, show= False) #batch number 0
         # assert False
-        temp_attention = attention_tensor[i]
+        # temp_attention = attention_tensor[i]
         # print(f'attention shape: \n{temp_attention}')
-        temp_attention = temp_attention[:-1, :-1]
+        # temp_attention = temp_attention[:-1, :-1]
         # print(f'attention shape: \n{temp_attention}')
-        print(f'attention tensor mean: {temp_attention.mean()}')
-        temp_list.append(temp_attention.mean().detach().numpy())
+        # print(f'attention tensor mean: {temp_attention.mean()}')
+        # temp_list.append(temp_attention.mean().detach().numpy())
 
     fig = plt.figure()
     plt.plot(list(range(len(temp_list))), temp_list)
