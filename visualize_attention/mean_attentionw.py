@@ -39,7 +39,7 @@ def mean_attention_w_by_hiddenlayer(sentences: list, bert_model, tokenizer) -> N
             layer_n = j
             attention_tensor = attention_layer[0] # 0 is batch number
             attentionw = attention_tensor[j]
-            attentionw = attentionw[:-1, :-1]
+            attentionw = attentionw[:-1, :-1]  # sep 以外の抽出
             attention_mean = attentionw.mean().detach().numpy()
             mean_by_layer[j] = attention_mean
             # print(mean_by_layer)
@@ -63,18 +63,7 @@ def mean_attention_w_by_hiddenlayer(sentences: list, bert_model, tokenizer) -> N
     fig = plt.figure()
     plt.plot(list(range(len(mean_all_attention))), mean_all_attention)
     plt.show()
-         
-
-
     
-    
-    # sep 以外の抽出
-
-    # layer ごとに平均して記録
-
-    # 画像に出力
-    
-    pass
 
 
 
