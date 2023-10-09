@@ -50,13 +50,13 @@ if __name__ == '__main__':
     ax.set_ylabel("frequency", fontsize=14)
     ax.set_xticks(np.arange(1, 29, 1), fontsize=12)
     ax.hist(length_list, bins= bin, ec= "black")
-    # save histofram
-    
+
+    # save histogram
     filepath = os.path.dirname(os.path.abspath(__file__))
     now = datetime.datetime.now()
     save_file = f'visualize_attention/figures/histo_sentence_lenght_{now.year:>04}{now.month:>02}{now.day:>02}{now.hour:>02}{now.minute:>02}{now.second:>02}.png'
     filepath = os.path.join(filepath, save_file)
-    plt.savefig(save_file)
+    # plt.savefig(save_file)
     plt.show()
 
 
