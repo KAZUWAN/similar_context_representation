@@ -6,9 +6,9 @@ from src.config import *
 class CreateOriginal():
     def __init__(self, dataset) -> None:
         self.dataset = dataset
-        self.ori_sentence_list = None
-        self.ori_label_num_list = None
-        self.ori_slot_list = None
+        self.ori_sentence_list = self.dataset["tokens"]
+        self.ori_label_num_list = self.dataset["labels_num"]
+        self.ori_slot_list = self.dataset["slots"]
         self.sentence_list = None
         self.sentence_only_o = None
         self.slot_list = None
@@ -17,23 +17,22 @@ class CreateOriginal():
         
         return
 
-    def remove_only_o(self): # 文脈語のみの文の削除 #ついでにスロットの種類とかも獲得する
+    def remove_only_o(self, remov= True): # 文脈語のみの文の削除 #ついでにスロットの種類とかも獲得する
         path_log = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)),logprint_path))
     
-        self.ori_sentence_list = self.dataset["tokens"]
         # labels = dataset["labels"]
-        self.ori_label_num_list = self.dataset["labels_num"]
-        self.ori_slot_list = self.dataset["slots"]
 
         count_i = collections.Counter(sum (self.ori_slot_list,[])) #slotsリストを１次元にし，そのスロット集で各スロットの出現頻度を計測 #文脈のみの文の削除前
         r = len(self.ori_label_num_list) #センテンス数
         self.sentence_only_o = []
-        for i in range(r): #データ数の分だけ確認する
-            if self.ori_label_num_list[r-1-i].count(1) == 0: #ラベル番号1  無いとき取り除く．スロットを持つ場合必ずラベルBをもつから #後ろの番号から調べる
-                self.sentence_only_o.append(self.ori_sentence_list.pop(r-1-i))
-                # labels.pop(r-1-i)
-                self.ori_label_num_list.pop(r-1-i)
-                self.ori_slot_list.pop(r-1-i)
+
+        if remov:
+            for i in range(r): #データ数の分だけ確認する
+                if self.ori_label_num_list[r-1-i].count(1) == 0: #ラベル番号1  無いとき取り除く．スロットを持つ場合必ずラベルBをもつから #後ろの番号から調べる
+                    self.sentence_only_o.append(self.ori_sentence_list.pop(r-1-i))
+                    # labels.pop(r-1-i)
+                    self.ori_label_num_list.pop(r-1-i)
+                    self.ori_slot_list.pop(r-1-i)
         # self.slot_list = []
         # for j in self.ori_slot_list:
         #     if j != "o":
@@ -41,7 +40,8 @@ class CreateOriginal():
         
         count_e = collections.Counter(sum(self.ori_slot_list,[])) #slotsリストを１次元にし，そのスロット集で各スロットの出現頻度を計測　#文脈のみの文の削除後
         temp_slot_type = list(count_e.keys())
-        temp_slot_type.pop(temp_slot_type.index("o"))
+        if remov:
+            temp_slot_type.pop(temp_slot_type.index("o"))
         self.slot_type = temp_slot_type
         with open(path_log, mode = "a") as logf:
             print("文脈削除前\n",count_i, file= logf)
