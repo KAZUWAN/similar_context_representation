@@ -8,23 +8,23 @@ import datetime
 
 
 def show_attention_heatmap(attention_w_tensor, tokens, layer_n, save= True, show= False):
-    fig, ax = plt.subplots(3, 4, figsize= (40,30))
+    fig, ax = plt.subplots(3, 4, figsize= (16,12))
     fig.subplots_adjust(wspace= 0.27, hspace= 0.05)
 
-    fig.suptitle(f'attention_weight at layer{layer_n}', fontsize= 40)
-    fig.supxlabel(f'key', fontsize= 40)
-    fig.supylabel(f'query', fontsize= 40)
+    # fig.suptitle(f'attention_weight at layer{layer_n}', fontsize= 16)
+    # fig.supxlabel(f'key', fontsize= 16)
+    # fig.supylabel(f'query', fontsize= 16)
     for i in range(12): # roop attention head num 12
         attention_w = attention_w_tensor[i]
-        sns.heatmap(attention_w.detach().numpy().copy(), ax = ax[i//4, i%4], cmap= 'OrRd', annot= True, vmin=0.0, vmax= 1.0, fmt='.2f', square=True, annot_kws={'fontsize':19})
-        ax[i//4, i%4].set_title(f'head{i}', fontsize= 30)
+        sns.heatmap(attention_w.detach().numpy().copy(), ax = ax[i//4, i%4], cmap= 'OrRd', annot= True, vmin=0.0, vmax= 1.0, fmt='.2f', square=True, annot_kws={'fontsize':5})
+        ax[i//4, i%4].set_title(f'head{i}', fontsize= 10)
 
-        ax[i//4, i%4].set_xticks(np.asarray(list(range(len(attention_w))))+0.5, tokens, rotation= 45, fontsize= 19)
-        ax[i//4, i%4].set_yticks(np.asarray(list(range(len(attention_w))))+0.5, tokens, rotation= 0, fontsize= 22)
+        ax[i//4, i%4].set_xticks(np.asarray(list(range(len(attention_w))))+0.5, tokens, rotation= 30, fontsize= 6)
+        ax[i//4, i%4].set_yticks(np.asarray(list(range(len(attention_w))))+0.5, tokens, rotation= 0, fontsize=7)
 
         '''color bar のフォントサイズ変更'''
         cbar = ax[i//4, i%4].collections[0].colorbar
-        cbar.ax.tick_params(labelsize = 19)
+        cbar.ax.tick_params(labelsize = 6)
 
     if save:
         # この実行ファイルのパスを取得
@@ -37,9 +37,10 @@ def show_attention_heatmap(attention_w_tensor, tokens, layer_n, save= True, show
         # 結合
         filepath = os.path.join(filepath, save_file)
 
-        plt.savefig(filepath)
+        plt.savefig(filepath, pad_inches=0.05)
     if show:
         plt.show()
+    plt.close()
 
 
 
