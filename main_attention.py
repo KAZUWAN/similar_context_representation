@@ -43,7 +43,7 @@ if __name__ == '__main__':
 
     fig = plt.figure(figsize=(10, 6))
     ax = fig.add_subplot()
-    print(list(range(1, 30, 1)))
+    # print(list(range(1, 30, 1)))
     bin = [i+0.5 for i in range(29)]
     plt.title(f"sentence length", fontsize=16)
     ax.set_xlabel("word count", fontsize=14)
@@ -61,8 +61,9 @@ if __name__ == '__main__':
 
 
 
-    print(list(set(length_list)))
-    print(sentences_list[3])
+    # print(list(set(length_list)))
+    # for i in range(200):
+    #     print(f"{i}: {sentences_list[i]}")
     max_length = max(length_list)
 
     sentences_add_token_dic = add_special_token.add_specialtokens(sentences_list, max_length, plus_token= True, padding= False)
@@ -71,23 +72,26 @@ if __name__ == '__main__':
     attention_mask_list = sentences_add_token_dic['attention_mask_list']
     input_ids_list = [tokenizer.convert_tokens_to_ids(k) for k in sentences_add_token]
 
-    sentence_number = 3 # any number
-    print(input_ids_list[3])
 
-    input_ids = torch.tensor(input_ids_list[sentence_number]).unsqueeze(dim= 0)
-    
-    bert_out = bert_model(input_ids, output_hidden_states= True, output_attentions= True)
-    attentions = bert_out['attentions']
-    tokens = tokenizer.convert_ids_to_tokens(input_ids.squeeze(dim= 0))
-    for i, attention_n in enumerate(attentions):
-        attention_w = attention_n[0]
-        # visualize_attention.attention_visualize02.show_attention_heatmap(attention_w_tensor= attention_w, tokens= tokens, layer_n=i, save = True, show= True)
-    num_attention_heads = bert_model.config.num_attention_heads
-    print(f'num_attention_heads: {num_attention_heads}')
-    print(f'bert_model attention head size: {int(bert_model.config.hidden_size / num_attention_heads)}')
-    attention_values = bert_out['last_hidden_state']
-    print(f'attention values shape: {attention_values.shape}')
-    attention_tensors = attention_values.chunk(num_attention_heads, dim=2)
+    sentence_number_list = [0, 17, 60, 86, 96] # any number
+    # sentence_number_list = [0]
+    for sentence_number in sentence_number_list:
+        print(f"{sentence_number}")
+        input_ids = torch.tensor(input_ids_list[sentence_number]).unsqueeze(dim= 0)
+        
+        bert_out = bert_model(input_ids, output_hidden_states= True, output_attentions= True)
+        attentions = bert_out['attentions']
+        tokens = tokenizer.convert_ids_to_tokens(input_ids.squeeze(dim= 0))
+        for i, attention_n in enumerate(attentions):
+            attention_w = attention_n[0]
+            visualize_attention.attention_visualize02.show_attention_heatmap(attention_w_tensor= attention_w, tokens= tokens, layer_n=i, save = True, show= False)
+
+    # num_attention_heads = bert_model.config.num_attention_heads
+    # print(f'num_attention_heads: {num_attention_heads}')
+    # print(f'bert_model attention head size: {int(bert_model.config.hidden_size / num_attention_heads)}')
+    # attention_values = bert_out['last_hidden_state']
+    # print(f'attention values shape: {attention_values.shape}')
+    # attention_tensors = attention_values.chunk(num_attention_heads, dim=2)
 
     # for i, tensor in enumerate(attention_tensors):
     #     print(f'Head {i+1} value shape: {tensor.shape}')
