@@ -57,13 +57,16 @@ if __name__ == '__main__':
     save_file = f'visualize_attention/figures/histo_sentence_lenght_{now.year:>04}{now.month:>02}{now.day:>02}{now.hour:>02}{now.minute:>02}{now.second:>02}.png'
     filepath = os.path.join(filepath, save_file)
     # plt.savefig(save_file)
-    plt.show()
+    # plt.show()
+    plt.close()
 
 
 
     # print(list(set(length_list)))
     # for i in range(200):
     #     print(f"{i}: {sentences_list[i]}")
+    # assert False
+    
     max_length = max(length_list)
 
     sentences_add_token_dic = add_special_token.add_specialtokens(sentences_list, max_length, plus_token= True, padding= False)
@@ -73,7 +76,7 @@ if __name__ == '__main__':
     input_ids_list = [tokenizer.convert_tokens_to_ids(k) for k in sentences_add_token]
 
 
-    sentence_number_list = [0, 17, 60, 86, 96] # any number
+    sentence_number_list = [0, 17, 60, 86, 96, 124] # any number
     # sentence_number_list = [0]
     for sentence_number in sentence_number_list:
         print(f"{sentence_number}")
