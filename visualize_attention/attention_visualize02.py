@@ -8,23 +8,39 @@ import datetime
 
 
 def show_attention_heatmap(attention_w_tensor, tokens, layer_n, save= True, show= False):
-    fig, ax = plt.subplots(3, 4, figsize= (16,12))
-    fig.subplots_adjust(wspace= 0.27, hspace= 0.05)
+    # fig, ax = plt.subplots(3, 4, figsize= (16,12))
+    # fig.subplots_adjust(wspace= 0.27, hspace= 0.05)
+
+    # 横並べ用
+    plt.rcParams['figure.subplot.bottom'] = 0.30
+    fig, ax = plt.subplots(1, 12, figsize= (50,3))
+    fig.subplots_adjust(wspace= 0.28)
+    # ここまで
 
     # fig.suptitle(f'attention_weight at layer{layer_n}', fontsize= 16)
     # fig.supxlabel(f'key', fontsize= 16)
     # fig.supylabel(f'query', fontsize= 16)
     for i in range(12): # roop attention head num 12
         attention_w = attention_w_tensor[i]
-        sns.heatmap(attention_w.detach().numpy().copy(), ax = ax[i//4, i%4], cmap= 'OrRd', annot= True, vmin=0.0, vmax= 1.0, fmt='.2f', square=True, annot_kws={'fontsize':5})
-        ax[i//4, i%4].set_title(f'head{i}', fontsize= 10)
+        # sns.heatmap(attention_w.detach().numpy().copy(), ax = ax[i//4, i%4], cmap= 'OrRd', annot= True, vmin=0.0, vmax= 1.0, fmt='.2f', square=True, annot_kws={'fontsize':5})
+        # ax[i//4, i%4].set_title(f'head{i}', fontsize= 10)
+        # ax[i//4, i%4].set_xticks(np.asarray(list(range(len(attention_w))))+0.5, tokens, rotation= 30, fontsize= 6)
+        # ax[i//4, i%4].set_yticks(np.asarray(list(range(len(attention_w))))+0.5, tokens, rotation= 0, fontsize=7)
+        # '''color bar のフォントサイズ変更'''
+        # cbar = ax[i//4, i%4].collections[0].colorbar
+        # cbar.ax.tick_params(labelsize = 6)
 
-        ax[i//4, i%4].set_xticks(np.asarray(list(range(len(attention_w))))+0.5, tokens, rotation= 30, fontsize= 6)
-        ax[i//4, i%4].set_yticks(np.asarray(list(range(len(attention_w))))+0.5, tokens, rotation= 0, fontsize=7)
-
+        # 横並べ用
+        sns.heatmap(attention_w.detach().numpy().copy(), ax = ax[i], cmap= 'OrRd', vmin=0.0, vmax= 1.0, square=True)
+        # ax[i].set_title(f'head{i}', fontsize= 10)
+        ax[i].set_xticks(np.asarray(list(range(len(attention_w))))+0.5, tokens, rotation= 90, fontsize= 8)
+        ax[i].set_yticks(np.asarray(list(range(len(attention_w))))+0.5, tokens, rotation= 0, fontsize= 8)
         '''color bar のフォントサイズ変更'''
-        cbar = ax[i//4, i%4].collections[0].colorbar
+        cbar = ax[i].collections[0].colorbar
         cbar.ax.tick_params(labelsize = 6)
+        # ここまで
+
+        
 
     if save:
         # この実行ファイルのパスを取得
