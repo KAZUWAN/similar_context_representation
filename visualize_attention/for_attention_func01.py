@@ -58,7 +58,7 @@ def pileup_attention(attention_w_tensor, tokens= None, layer_n= None, save= Fals
     plt.close()
     
 
-def most_attendingto_wordfreq(attention_w_tensor, tokens, layer_n, frag_mask= False, save= True, show= False) -> None:
+def most_attendingto_wordfreq(attention_w_tensor, tokens, layer_n, frag_mask= False) -> None:
     # レイヤーごとにアテンションを受け取り，各ヘッドの各行で最も着目している単語を記録していく
     # cls, sepを抜くか抜かないかを選択にするか，両方出すのが良い
     tokens = tokens
@@ -82,7 +82,7 @@ def most_attendingto_wordfreq(attention_w_tensor, tokens, layer_n, frag_mask= Fa
     # その回数を12ヘッド回通して記録
     # そのレイヤーで最も注目した単語をインデックス番号を付けて出力　（例）3(index_number)_
     # print("shapeshapeshape")
-    freq_list[0,0] = 1
+    # freq_list[0,0] = 1
     # print(freq_list[0,0])
     # print(freq_list)
     for i in range(12): # roop attention head num 12
