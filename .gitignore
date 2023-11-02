@@ -10,3 +10,5 @@ trained_model/
 log/
 
 visualize_attention/figures/
+
+util/figures/
