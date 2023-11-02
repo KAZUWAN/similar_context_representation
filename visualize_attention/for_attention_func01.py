@@ -93,10 +93,10 @@ def most_attendingto_wordfreq(attention_w_tensor, tokens, layer_n, frag_mask= Fa
             #  print(freq_list)
     # print(freq_list)
 
-    print(f"\n{layer_n} most attend to:")
+    print(f"\nlayer{layer_n} most attend to:")
     for i in range(attention_w.shape[0]):
         index = np.argmax(freq_list[i])
-        print(f"layer{tokens[i]} most attnend to {index}_{tokens[index]}")
+        print(f"{tokens[i]} most attnend to {index}_{tokens[index]}")
 
 
 if __name__ == "__main__":
