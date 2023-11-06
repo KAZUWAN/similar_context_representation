@@ -4,6 +4,7 @@ import torch
 import copy
 import numpy as np
 import datetime
+import random
 
 from transformers import BertTokenizer, BertModel
 from src import config
@@ -72,13 +73,20 @@ if __name__ == '__main__':
     # 調べたい文を手動で，文のリストの後ろに追加する
     # probe_sentence1 = ["hi", ",", "i", "want", "to", "attack", "a", "restaurant", "reservation", "."]
     # sentences_list.append(probe_sentence1)
-    probe_sentence2 = ["the", "lord", "that", "can", "hurt", "the", "prince", "could", "comfort", "wizard", "by", "himself"]
-    sentences_list.append(probe_sentence2)
-    # # Open Sesamiの論文のPDF 7ページの式4の下の文をを参照↓
-    # probe_sentence3 = ["verbs", "agree", "with", "a", "single", "subject", ",", "and", "anaphor", "take", "a", "single", "noun", "phrase", "as", "their", "antecedent", "."]
+    # probe_sentence2 = ["the", "lord", "that", "can", "hurt", "the", "prince", "could", "comfort", "wizard", "by", "himself"]
+    # sentences_list.append(probe_sentence2)
+    # Open Sesamiの論文のPDF 7ページの式4の下の文をを参照↓
+    probe_sentence3 = ["verbs", "agree", "with", "a", "single", "subject", ",", "and", "anaphor", "take", "a", "single", "noun", "phrase", "as", "their", "antecedent", "."]
     # sentences_list.append(probe_sentence3)
     # probe_sentence4 = ["verbs", "agree", "with", "a", "single", "subject", ",", "and", "i", "want", "to", "make", "a", "restaurant", "reservation", "."]
     # sentences_list.append(probe_sentence4)
+    probe_sentence5 = ["colorless", "green", "ideas", "sleep", "furiously", "."]
+    sentences_list.append(probe_sentence5)
+    # index をランダムに入れ替えた文をいつもの比較の文と，長いやつでやってみよう
+    probe_sentence6 = random.sample(sentences_list[0], len(sentences_list[0]))
+    sentences_list.append(probe_sentence6)
+    probe_sentence7 = random.sample(probe_sentence3, len(probe_sentence3))
+    sentences_list.append(probe_sentence7)
     max_length = max(length_list)
     
     sentences_add_token_dic = add_special_token.add_specialtokens(sentences_list, max_length, plus_token= True, padding= False)
@@ -89,7 +97,7 @@ if __name__ == '__main__':
 
 
     # sentence_number_list = [0, 17, 60, 86, 96, 124, -4, -3, -2, -1] # any number
-    sentence_number_list = [-1]
+    sentence_number_list = [-3, -2, -1]
     for sentence_number in sentence_number_list:
         print(f"{sentence_number}")
         input_ids = torch.tensor(input_ids_list[sentence_number]).unsqueeze(dim= 0)
@@ -103,7 +111,7 @@ if __name__ == '__main__':
             visualize_attention.for_attention_func01.pileup_attention(attention_w_tensor= attention_w, tokens= tokens, layer_n=i, save = True, show= False)
 
             # 各レイヤーでどの単語がどの単語の情報を受け取る回数が多いか出力する．CLS, SEPトークンを除いて，どれに注意しているか見ることもできる
-            visualize_attention.for_attention_func01.most_attendingto_wordfreq(attention_w_tensor= attention_w, frag_mask= True, tokens= tokens, layer_n=i, save = True, show= False)
+            # visualize_attention.for_attention_func01.most_attendingto_wordfreq(attention_w_tensor= attention_w, frag_mask= True, tokens= tokens, layer_n=i)
 
 
     # num_attention_heads = bert_model.config.num_attention_heads
