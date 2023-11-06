@@ -1,6 +1,6 @@
 from transformers import BertTokenizer, BertModel
 import torch
-from torch import nn
+
 
 # BERTモデルとトークナイザのロード
 model_name = 'bert-base-uncased'
@@ -83,11 +83,18 @@ print(f'miexd_query: \n{mixed_query}')
 
 # 以下の結果より，matmulは想定通りの行列計算をしてくれている
 hoge = torch.tensor([1,2,3])
+print(f'hoge: {hoge}')
 hoge2 = torch.tensor([[1,1,1],[2,2,2],[3,3,3]])
+print(f'hoge2[0:3]: {hoge2[0:3]}')
+print(f"hoge2: {hoge2}")
 hoge3 = torch.matmul(hoge, hoge2)
-print(f'hoge3: {hoge3}')
+print(f'hoge3 = torch.matmul(hoge, hoge2):\n {hoge3}')
 hoge4 = torch.matmul(hoge, torch.transpose(hoge2, 0, 1))
-print(f'hoge4: {hoge4}')
+print(f'hoge4 = torch.matmul(hoge, torch.transpose(hoge2, 0, 1)):\n {hoge4}')
+
+print(f'shape hoge: {hoge.shape}')
+print(f'shape torch.transpose(hoge2, 0, 1): {torch.transpose(hoge2, 0, 1).shape}')
+
 
 
 
