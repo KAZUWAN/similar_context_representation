@@ -5,6 +5,7 @@ import numpy as np
 import seaborn as sns
 import os
 import datetime
+import copy
 
 
 
@@ -101,6 +102,7 @@ def inner_pweight(model_name, show= True, save= False):
         
     # 12層だけ繰り返す
     for layer_n in range(n):
+        print(f"now processing Layer{layer_n} ...")
         # BERTのアテンション層を取得
         attention_layer = model.encoder.layer[layer_n].attention
         # Queryの線形層の重みの抽出
@@ -108,7 +110,7 @@ def inner_pweight(model_name, show= True, save= False):
         # Keyの線形層の重みの抽出
         key_weights = attention_layer.self.key.weight
 
-        fig, ax = plt.subplots(1, 12, figsize= (50,4))
+        fig, ax = plt.subplots(1, 12, figsize= (100,8))
         fig.suptitle(f'Layer {layer_n}: Wqk [innerp weight]', fontsize= 20)
 
         # ---- ここで，12ヘッドごとに内積の計算 ----
@@ -116,14 +118,16 @@ def inner_pweight(model_name, show= True, save= False):
         for head_n in range(hn):
             # 内積計算
             # 計算の便宜上，Query weight は転置してQueryに掛けられる
-            temp_query_weights = torch.transpose(query_weights[head_n*64: (head_n+1)*64], 0, 1)
+            temp_query_weights = copy.copy(query_weights[head_n*64: (head_n+1)*64])
+            temp_query_weights = torch.transpose(temp_query_weights, 0, 1)
             # Keyも同様に転置してかけられるが，この後Query weightに対して転置して書けるので転置の転置でそのままでよい
-            temp_key_weights = key_weights[head_n*64: (head_n+1)*64]
+            temp_key_weights = copy.copy(key_weights[head_n*64: (head_n+1)*64])
 
             innerp_weights = torch.matmul(temp_query_weights, temp_key_weights)
 
             w_max = innerp_weights.max()
             w_min = innerp_weights.min()
+            # print(f"w_max: {w_max}, w_min: {w_min}")
             if abs(w_max) >= abs(w_min):
                 vmax = w_max
                 vmin = w_max * -1
@@ -131,7 +135,11 @@ def inner_pweight(model_name, show= True, save= False):
                 vmax = w_min * -1
                 vmin = w_min
 
-            sns.heatmap(innerp_weights.detach().numpy().copy(), ax = ax[head_n], cmap= 'BrBG', vmin= vmin, vmax= vmax, square=True)
+            # print(f"vmax: {vmax}, vmin: {vmin}")
+
+            # sns.heatmap(innerp_weights.detach().numpy().copy(), ax = ax[head_n], cmap= 'BrBG', square=True)
+            # ↓vmax, vminをそのヘッドにおける最大最小に合わせるかどうか
+            sns.heatmap(innerp_weights.detach().numpy().copy(), ax = ax[head_n], cmap= 'BrBG', square=True, vmax=vmax, vmin=vmin)
             ax[head_n].set_title(f'head {head_n}', fontsize= 20)
             ax[head_n].set_xticks(np.asarray(list(range(0, hidden_size+1, 64))), list(range(0, hidden_size+1, 64)), rotation= 90, fontsize= 8)
             ax[head_n].set_yticks(np.asarray(list(range(0, hidden_size+1, 64))), list(range(0, hidden_size+1, 64)), rotation= 0, fontsize= 8)
@@ -157,14 +165,15 @@ def inner_pweight(model_name, show= True, save= False):
         if show:
             plt.show()
         plt.close()
+
         
 
 
 if __name__ == "__main__":
 
 
-    extract_lweights(model_name="bert-base-uncased", show= False, save= True)
-    # inner_pweight(model_name="bert-base-uncased", show= False, save= True)
+    # extract_lweights(model_name="bert-base-uncased", show= False, save= True)
+    inner_pweight(model_name="bert-base-uncased", show= False, save= True)
     
 
     
