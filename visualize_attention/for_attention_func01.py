@@ -9,53 +9,57 @@ from transformers import BertTokenizer, BertModel
 
 
 
-def pileup_attention(attention_w_tensor, tokens= None, layer_n= None, save= False, show= False) -> None:
+def pileup_attention(attention_w_tensor:torch.tensor, tokens= None, layer_n= None, show= False, save= False,
+                      mask_special_token=True, mask_diag= True, get_pileup_attention= False) -> None or np.ndarray:
+   
+   
     heads = attention_w_tensor
-
     piled_attn = torch.sum(heads, dim= 0)
     # print(f"piled attention:\n {piled_attn}")
-
     masked_piled_attn = copy.copy(piled_attn)
     masked_piled_attn = masked_piled_attn.detach().numpy()
-    masked_piled_attn[:,0] = 0 # mask CLS -> any words
-    masked_piled_attn[:,-1] = 0 # mask SEP -> any words    
-    diag = np.zeros(masked_piled_attn.shape[0]) # diag -> 0
-    np.fill_diagonal(masked_piled_attn, diag)
+
+    if mask_special_token:
+        masked_piled_attn[:,0] = 0 # any words -> mask CLS
+        masked_piled_attn[:,-1] = 0 # any words -> mask SEP 
+        
+    if mask_diag:   
+        diag = np.zeros(masked_piled_attn.shape[0]) 
+        np.fill_diagonal(masked_piled_attn, diag) # diag -> 0
     # print(f'masked piled attention: \n{masked_piled_attn}')
     # print(f'shape[0]:{masked_piled_attn.shape[0]}')
     # print(tokens)
 
+    if save or show:
+        # plt.rcParams['figure.subplot.bottom'] = 0.30
+        fig1, ax1 = plt.subplots(1, 1, figsize= (16,16))
+        fig1.suptitle(f'piled attention', fontsize= 20)
+        fig1.supxlabel(f'key', fontsize= 20)
+        fig1.supylabel(f'query', fontsize= 20)
+        sns.heatmap(masked_piled_attn.copy(), ax = ax1, cmap= 'OrRd', square=True)
+        ax1.set_title(f'layer {layer_n}', fontsize= 20)
+        ax1.set_xticks(np.asarray(list(range(masked_piled_attn.shape[0])))+0.5, tokens, rotation= 90, fontsize= 16)
+        ax1.set_yticks(np.asarray(list(range(masked_piled_attn.shape[0])))+0.5, tokens, rotation= 0, fontsize= 16)
+        '''color bar のフォントサイズ変更'''
+        cbar = ax1.collections[0].colorbar
+        cbar.ax1.tick_params(labelsize = 16)
 
-    # plt.rcParams['figure.subplot.bottom'] = 0.30
-    fig, ax = plt.subplots(1, 1, figsize= (16,16))
+        if show:
+            fig1.show()
 
-    fig.suptitle(f'piled attention', fontsize= 20)
-    fig.supxlabel(f'key', fontsize= 20)
-    fig.supylabel(f'query', fontsize= 20)
+        if save:
+            # この実行ファイルのパスを取得
+            filepath = os.path.dirname(os.path.abspath(__file__))
+            # このファイルから画像を保存するフォルダへのパス
+            now = datetime.datetime.now()
+            save_file = f'figures/piled_attention_l{layer_n}_{now.year:>04}{now.month:>02}{now.day:>02}{now.hour:>02}{now.minute:>02}{now.second:>02}.png'
+            # 結合
+            filepath = os.path.join(filepath, save_file)
+            fig1.savefig(filepath, pad_inches=0.05)  
+        fig1.close()
 
-    sns.heatmap(masked_piled_attn.copy(), ax = ax, cmap= 'OrRd', square=True)
-    ax.set_title(f'layer {layer_n}', fontsize= 20)
-    ax.set_xticks(np.asarray(list(range(masked_piled_attn.shape[0])))+0.5, tokens, rotation= 90, fontsize= 16)
-    ax.set_yticks(np.asarray(list(range(masked_piled_attn.shape[0])))+0.5, tokens, rotation= 0, fontsize= 16)
-    '''color bar のフォントサイズ変更'''
-    cbar = ax.collections[0].colorbar
-    cbar.ax.tick_params(labelsize = 16)
-
-    if save:
-        # この実行ファイルのパスを取得
-        filepath = os.path.dirname(os.path.abspath(__file__))
-
-        # このファイルから画像を保存するフォルダへのパス
-        now = datetime.datetime.now()
-        save_file = f'figures/piled_attention_l{layer_n}_{now.year:>04}{now.month:>02}{now.day:>02}{now.hour:>02}{now.minute:>02}{now.second:>02}.png'
-
-        # 結合
-        filepath = os.path.join(filepath, save_file)
-
-        plt.savefig(filepath, pad_inches=0.05)
-    if show:
-        plt.show()
-    plt.close()
+    if get_pileup_attention:
+        return masked_piled_attn
     
 
 def most_attendingto_wordfreq(attention_w_tensor, tokens, layer_n, frag_mask= False) -> None:
@@ -73,7 +77,6 @@ def most_attendingto_wordfreq(attention_w_tensor, tokens, layer_n, frag_mask= Fa
         attention_w_tensor[:, :, 0] = 0 # mask CLS -> any words
         attention_w_tensor[:, :, -1] = 0 # mask SEP -> any words
         attention_w_tensor = torch.from_numpy(attention_w_tensor.astype(np.float32)).clone()    
-        pass
         # もしマスクするなら12ヘッド全てのCLS,SEPへの注意を0にする   
 
     # assert False
@@ -87,6 +90,7 @@ def most_attendingto_wordfreq(attention_w_tensor, tokens, layer_n, frag_mask= Fa
     # print(freq_list)
     for i in range(12): # roop attention head num 12
         attention_w = attention_w_tensor[i]
+
         for j in range(attention_w.shape[0]):
              index = torch.argmax(attention_w[j])
              freq_list[j, index] += 1
@@ -97,6 +101,60 @@ def most_attendingto_wordfreq(attention_w_tensor, tokens, layer_n, frag_mask= Fa
     for i in range(attention_w.shape[0]):
         index = np.argmax(freq_list[i])
         print(f"{tokens[i]} most attnend to {index}_{tokens[index]}")
+
+
+def plieup_attentionw_graph(attention_w_tensors:tuple, tokens, show= False, save= False, mask_special_token=True, mask_diag= True, upto_n_layer=11):
+    # 間違えた，一つの層内で，各単語がどの単語に着目しているかを見たかったのに，なんかよくわからんもの出てきた
+    if (show == False) and (save == False):
+        print(f"no operation")
+        return
+    else:
+        pass
+
+    cm = plt.get_cmap('Blues')
+    # make figure
+    fig1, ax1 = plt.subplots(1, 1, figsize=(16,16))
+
+    for layer_n, attention_w in enumerate(attention_w_tensors):
+
+        # legend付けないとな
+        attn_w = pileup_attention(attention_w_tensor=attention_w.squeeze(dim=0), tokens=tokens, layer_n=layer_n, show=False, save=False, mask_special_token=mask_special_token, mask_diag=mask_diag, get_pileup_attention=True)
+        total_attention_by_layer = attn_w.sum(axis=0)
+        # print(f'attn_w.shape: {attn_w.shape}')
+        # print(f"attn_w.sum(axis=0): {attn_w.sum(axis=0)}")
+        ax1.plot(list(range(len(tokens))), total_attention_by_layer, color=cm(layer_n/len(attention_w_tensors)), label=f"Layer{layer_n}")
+
+        if layer_n == 0:
+            if mask_special_token & mask_diag:
+                ax1.set_title(f'pileup attention weight  *masking current,SEP,CLS')
+            elif mask_special_token:
+                ax1.set_title(f'pileup attention weight  *masking SEP,CLS')
+            elif mask_diag:
+                ax1.set_title(f'pileup attention weight  *masking current')
+            else:
+                ax1.set_title(f'pileup attention weight')
+
+            ax1.set_xlabel(f'Query word')
+            ax1.set_ylabel(f'pileup attention weight')
+            ax1.set_xticks(list(range(len(tokens))), tokens,  fontsize=16, rotation=90)
+            ax1.set_ylim(0, 20)
+
+            if layer_n == upto_n_layer:
+                break
+
+    ax1.legend(loc='upper left')
+
+    if show:
+        plt.show()
+    
+    if save:
+        filepath = os.path.dirname(os.path.abspath(__file__))
+        now = datetime.datetime.now()
+        save_file = f'figures/pileupgraph_{now.year:>04}{now.month:>02}{now.day:>02}{now.hour:>02}{now.minute:>02}{now.second:>02}.png'
+        filepath = os.path.join(filepath, save_file)
+        fig1.savefig(filepath, pad_inches=0.05)  
+    plt.close(fig1)
+    
 
 
 if __name__ == "__main__":
