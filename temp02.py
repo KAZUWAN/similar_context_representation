@@ -87,6 +87,8 @@ print(f'hoge: {hoge}')
 hoge2 = torch.tensor([[1,1,1],[2,2,2],[3,3,3]])
 print(f'hoge2.shape {hoge2.shape}')
 print(f'hoge2.sum(dim=0)', hoge2.sum(dim=0))
+print(f"{hoge2.detach().numpy().copy().sum(axis=0)}")
+assert False
 print(f'hoge2[0:3]: {hoge2[0:3]}')
 print(f"hoge2: {hoge2}")
 hoge3 = torch.matmul(hoge, hoge2)
