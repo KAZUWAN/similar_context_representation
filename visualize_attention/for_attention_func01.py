@@ -10,9 +10,9 @@ from transformers import BertTokenizer, BertModel
 
 
 def pileup_attention(attention_w_tensor:torch.tensor, tokens= None, layer_n= None, show= False, save= False,
-                      mask_special_token=True, mask_diag= True, get_pileup_attention= False) -> None or np.ndarray:
+                      mask_special_token=True, mask_diag= True, get_pileup_attention= False, return_path= False) -> None or np.array or list:
    
-   
+    filepath = None
     heads = attention_w_tensor
     piled_attn = torch.sum(heads, dim= 0)
     # print(f"piled attention:\n {piled_attn}")
@@ -42,7 +42,7 @@ def pileup_attention(attention_w_tensor:torch.tensor, tokens= None, layer_n= Non
         ax1.set_yticks(np.asarray(list(range(masked_piled_attn.shape[0])))+0.5, tokens, rotation= 0, fontsize= 16)
         '''color bar のフォントサイズ変更'''
         cbar = ax1.collections[0].colorbar
-        cbar.ax1.tick_params(labelsize = 16)
+        cbar.ax.tick_params(labelsize = 16)
 
         if show:
             fig1.show()
@@ -56,10 +56,16 @@ def pileup_attention(attention_w_tensor:torch.tensor, tokens= None, layer_n= Non
             # 結合
             filepath = os.path.join(filepath, save_file)
             fig1.savefig(filepath, pad_inches=0.05)  
-        fig1.close()
+        plt.close(fig1)
 
-    if get_pileup_attention:
+    if get_pileup_attention and return_path:
+        return masked_piled_attn, filepath
+    
+    elif get_pileup_attention:
         return masked_piled_attn
+    
+    elif return_path:
+        return filepath
     
 
 def most_attendingto_wordfreq(attention_w_tensor, tokens, layer_n, frag_mask= False) -> None:
