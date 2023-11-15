@@ -6,6 +6,7 @@ import datetime
 import matplotlib.pyplot as plt
 import os
 from transformers import BertTokenizer, BertModel
+import time
 
 
 
@@ -55,7 +56,8 @@ def pileup_attention(attention_w_tensor:torch.tensor, tokens= None, layer_n= Non
             save_file = f'figures/piled_attention_l{layer_n}_{now.year:>04}{now.month:>02}{now.day:>02}{now.hour:>02}{now.minute:>02}{now.second:>02}.png'
             # 結合
             filepath = os.path.join(filepath, save_file)
-            fig1.savefig(filepath, pad_inches=0.05)  
+            fig1.savefig(filepath, pad_inches=0.05)
+            time.sleep(1.0)  
         plt.close(fig1)
 
     if get_pileup_attention and return_path:
@@ -119,7 +121,7 @@ def plieup_attentionw_graph(attention_w_tensors:tuple, tokens, show= False, save
 
     cm = plt.get_cmap('Blues')
     # make figure
-    fig1, ax1 = plt.subplots(1, 1, figsize=(16,16))
+    fig1, ax1 = plt.subplots(1, 1, figsize=(32,16))
 
     for layer_n, attention_w in enumerate(attention_w_tensors):
 
@@ -158,7 +160,8 @@ def plieup_attentionw_graph(attention_w_tensors:tuple, tokens, show= False, save
         now = datetime.datetime.now()
         save_file = f'figures/pileupgraph_{now.year:>04}{now.month:>02}{now.day:>02}{now.hour:>02}{now.minute:>02}{now.second:>02}.png'
         filepath = os.path.join(filepath, save_file)
-        fig1.savefig(filepath, pad_inches=0.05)  
+        fig1.savefig(filepath, pad_inches=0.05) 
+        time.sleep(1.0) 
     plt.close(fig1)
     
 
